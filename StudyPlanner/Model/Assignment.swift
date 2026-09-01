@@ -1,0 +1,27 @@
+//
+//  Assignment.swift
+//  StudyPlanner
+//
+//  Created by Grace Chi Yen Chong on 2/9/2026.
+//
+
+import Foundation
+
+struct Assignment: Identifiable {
+    var id: String = UUID().uuidString
+    var title: String
+    var course: String
+    var dueDate: Date
+    var priority: Priority
+    var tasks: [AcademicTask]
+
+    var isCompleted: Bool {
+        tasks.allSatisfy { $0.isCompleted }
+    }
+    
+    enum Priority: String, CaseIterable {
+        case low = "Low"
+        case medium = "Medium"
+        case high = "High"
+    }
+}
