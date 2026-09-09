@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct AcademicTask: Identifiable {
-    let id: UUID
+struct AcademicTask: Identifiable, Codable {
+    var id: String = UUID().uuidString
     var title: String
     var isCompleted: Bool
 }

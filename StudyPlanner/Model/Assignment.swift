@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Assignment: Identifiable {
+struct Assignment: Identifiable, Codable {
     var id: String = UUID().uuidString
     var title: String
     var course: String
@@ -16,10 +16,10 @@ struct Assignment: Identifiable {
     var tasks: [AcademicTask]
 
     var isCompleted: Bool {
-        tasks.allSatisfy { $0.isCompleted }
+        !tasks.isEmpty && tasks.allSatisfy { $0.isCompleted }
     }
-    
-    enum Priority: String, CaseIterable {
+
+    enum Priority: String, CaseIterable, Codable {
         case low = "Low"
         case medium = "Medium"
         case high = "High"
