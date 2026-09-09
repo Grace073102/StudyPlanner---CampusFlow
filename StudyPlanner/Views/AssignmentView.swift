@@ -12,6 +12,7 @@ struct AssignmentView: View {
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
 
     var body: some View {
+
         VStack(spacing: 20) {
 
             // Top navigation bar
@@ -34,10 +35,12 @@ struct AssignmentView: View {
             }
             .padding(.horizontal)
 
-            // Upcoming deadlines
-            UpcomingDeadlinesView()
+            // Section 1 - Upcoming Deadlines
+            UpcomingDeadlinesView(
+                assignments: assignmentViewModel.assignments
+            )
 
-            // Today's Tasks
+            // Section 2 - Today's Tasks
             VStack(alignment: .leading, spacing: 12) {
 
                 Text("Today's Task")
@@ -50,9 +53,14 @@ struct AssignmentView: View {
                         $assignmentViewModel.assignments[0].tasks
                     ) { $task in
 
-                        TaskView(task: $task)
-                    }
+                        TaskView(task: $task) {
 
+                            let updatedAssignment =
+                                assignmentViewModel.assignments[0]
+
+                            assignmentViewModel.update(updatedAssignment)
+                        }
+                    }
                 } else {
                     Text("No tasks available")
                         .foregroundStyle(.secondary)
@@ -66,8 +74,10 @@ struct AssignmentView: View {
             )
             .padding(.horizontal)
 
-            // Progress
-            ProgressOverviewView()
+            // Section 3 - Progress Overview
+            ProgressOverviewView(
+                progress: assignmentViewModel.overallProgress
+            )
 
             Spacer()
         }

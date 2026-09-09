@@ -10,6 +10,7 @@ import SwiftUI
 struct TaskView: View {
 
     @Binding var task: AcademicTask
+    var onChange: () -> Void = {}
 
     var body: some View {
         HStack(spacing: 12) {
@@ -17,6 +18,7 @@ struct TaskView: View {
             Button {
                 withAnimation {
                     task.isCompleted.toggle()
+                    onChange()
                 }
             } label: {
                 Image(

@@ -19,22 +19,42 @@ final class AssignmentViewModel: ObservableObject {
         load()
     }
 
+    // Load assignments from repository
     func load() {
-        assignments = repository.load()
+        assignments = repository.assignments
     }
 
+    // Add assignment
     func add(_ assignment: Assignment) {
         repository.add(assignment)
-        load()
+        assignments = repository.assignments
     }
 
+    // Update assignment
     func update(_ assignment: Assignment) {
         repository.update(assignment)
-        load()
+        assignments = repository.assignments
     }
 
+    // Delete assignment
     func delete(_ assignment: Assignment) {
         repository.delete(assignment)
-        load()
+        assignments = repository.assignments
+    }
+
+    // Calculate overall task progress
+    var overallProgress: Double {
+
+        let allTasks = assignments.flatMap { $0.tasks }
+
+        guard !allTasks.isEmpty else {
+            return 0
+        }
+
+        let completedTasks = allTasks.filter {
+            $0.isCompleted
+        }.count
+
+        return Double(completedTasks) / Double(allTasks.count)
     }
 }
