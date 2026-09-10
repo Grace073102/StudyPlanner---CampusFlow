@@ -8,11 +8,14 @@
 import Foundation
 
 struct Assignment: Identifiable, Codable {
+
     var id: String = UUID().uuidString
+
     var title: String
     var course: String
     var dueDate: Date
     var priority: Priority
+    var description: String?
     var tasks: [AcademicTask]
 
     var isCompleted: Bool {

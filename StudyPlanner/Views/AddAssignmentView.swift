@@ -11,25 +11,18 @@ struct AddAssignmentView: View {
 
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
     @Environment(\.dismiss) private var dismiss
+
     @State private var title = ""
-    @State private var selectedSubject = "Select Subject"
+    @State private var course = ""
     @State private var dueDate = Date()
     @State private var priority: Assignment.Priority = .high
     @State private var description = ""
-
-    private let subjects = [
-        "Database Systems",
-        "UI/UX Design",
-        "Cloud Computing",
-        "Digital Forensics",
-        "Programming",
-        "Marketing"
-    ]
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+
                     VStack(alignment: .leading, spacing: 7) {
                         Text("Assignment Title")
                             .font(.subheadline)
@@ -51,39 +44,23 @@ struct AddAssignmentView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 7) {
-                        Text("Subject")
+                        Text("Course")
                             .font(.subheadline)
                             .fontWeight(.semibold)
 
-                        Menu {
-                            ForEach(subjects, id: \.self) { subject in
-                                Button(subject) {
-                                    selectedSubject = subject
-                                }
-                            }
-                        } label: {
-                            HStack {
-                                Text(selectedSubject)
-                                    .foregroundStyle(
-                                        selectedSubject == "Select Subject"
-                                        ? .secondary
-                                        : .primary
-                                    )
-
-                                Spacer()
-                                Image(systemName: "chevron.down")
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(.horizontal, 14)
-                            .frame(height: 48)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(
-                                        Color.gray.opacity(0.4),
-                                        lineWidth: 1
-                                    )
-                            )
-                        }
+                        TextField(
+                            "e.g. Database Systems",
+                            text: $course
+                        )
+                        .padding(.horizontal, 14)
+                        .frame(height: 48)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(
+                                    Color.gray.opacity(0.4),
+                                    lineWidth: 1
+                                )
+                        )
                     }
 
                     VStack(alignment: .leading, spacing: 7) {
@@ -97,7 +74,10 @@ struct AddAssignmentView: View {
                             displayedComponents: .date
                         )
                         .labelsHidden()
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(
+                            maxWidth: .infinity,
+                            alignment: .leading
+                        )
                         .padding(.horizontal, 14)
                         .frame(height: 48)
                         .background(
@@ -113,6 +93,7 @@ struct AddAssignmentView: View {
                         Text("Priority")
                             .font(.subheadline)
                             .fontWeight(.semibold)
+
                         Menu {
                             Button {
                                 priority = .high
@@ -131,7 +112,6 @@ struct AddAssignmentView: View {
                             } label: {
                                 Text("Low")
                             }
-
                         } label: {
                             HStack {
                                 Circle()
@@ -162,14 +142,15 @@ struct AddAssignmentView: View {
                         Text("Description (Optional)")
                             .font(.subheadline)
                             .fontWeight(.semibold)
+
                         ZStack(alignment: .topLeading) {
                             RoundedRectangle(cornerRadius: 10)
                                 .stroke(
                                     Color.gray.opacity(0.4),
                                     lineWidth: 1
                                 )
-
                             if description.isEmpty {
+
                                 Text("Enter assignment details...")
                                     .foregroundStyle(.secondary)
                                     .padding(.horizontal, 14)
@@ -197,103 +178,80 @@ struct AddAssignmentView: View {
                                     .fill(Color.blue)
                             )
                     }
-                    .disabled(
-                        title.trimmingCharacters(
-                            in: .whitespaces
-                        ).isEmpty ||
-                        selectedSubject == "Select Subject"
-                    )
-                    .opacity(
-                        title.trimmingCharacters(
-                            in: .whitespaces
-                        ).isEmpty ||
-                        selectedSubject == "Select Subject"
-                        ? 0.5
-                        : 1
-                    )
+                    .disabled(!isValid)
+                    .opacity(isValid ? 1 : 0.5)
                 }
                 .padding(20)
             }
+
             .navigationTitle("Add Assignment")
             .navigationBarTitleDisplayMode(.inline)
 
-            // MARK: - Top Buttons
             .toolbar {
-
+                // Back
                 ToolbarItem(
                     placement: .cancellationAction
                 ) {
-
                     Button {
                         dismiss()
                     } label: {
-
                         Image(systemName: "chevron.left")
                             .foregroundStyle(.primary)
                     }
                 }
 
+                // Save
                 ToolbarItem(
                     placement: .confirmationAction
                 ) {
-
                     Button {
                         saveAssignment()
                     } label: {
-
                         Image(systemName: "checkmark")
                             .fontWeight(.semibold)
                     }
-                    .disabled(
-                        title.trimmingCharacters(
-                            in: .whitespaces
-                        ).isEmpty ||
-                        selectedSubject == "Select Subject"
-                    )
+                    .disabled(!isValid)
                 }
             }
         }
     }
 
-    // MARK: - Save Assignment
-    private func saveAssignment() {
+    private var isValid: Bool {
+        !title.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        ).isEmpty && !course.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        ).isEmpty
+    }
 
+    private func saveAssignment() {
         let newAssignment = Assignment(
             title: title,
-            course: selectedSubject,
+            course: course,
             dueDate: dueDate,
             priority: priority,
+            description: description,
             tasks: []
         )
-
         assignmentViewModel.add(newAssignment)
-
         dismiss()
     }
 
-    // MARK: - Priority Colour
     private func priorityColor(
         _ priority: Assignment.Priority
     ) -> Color {
-
         switch priority {
-
         case .high:
             return .red
-
         case .medium:
             return .orange
-
         case .low:
             return .green
         }
     }
 }
 
-
-// MARK: - Preview
 #Preview {
-
     AddAssignmentView()
         .environmentObject(
             AssignmentViewModel(

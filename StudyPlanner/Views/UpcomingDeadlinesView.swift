@@ -191,6 +191,7 @@ struct UpcomingDeadlinesView: View {
                 course: "Database Systems",
                 dueDate: Date().addingTimeInterval(86400 * 2),
                 priority: .high,
+                description: "Complete the database assignment",
                 tasks: []
             ),
 
