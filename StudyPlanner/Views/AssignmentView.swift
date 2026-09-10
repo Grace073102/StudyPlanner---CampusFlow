@@ -11,77 +11,114 @@ struct AssignmentView: View {
 
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
 
+    @State private var showAddAssignment = false
+
     var body: some View {
+        ScrollView {
+            VStack(spacing: 20) {
 
-        VStack(spacing: 20) {
+                // MARK: - Top Navigation
+                HStack {
 
-            // Top navigation bar
-            HStack {
-                Image(systemName: "line.3.horizontal")
+                    Image(systemName: "line.3.horizontal")
+                        .font(.title2)
 
-                Spacer()
+                    Spacer()
 
-                Image(systemName: "bell")
-            }
-            .padding(.horizontal)
+                    // Add Assignment Button
+                    Button {
+                        showAddAssignment = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .frame(width: 36, height: 36)
+                            .background(
+                                Circle()
+                                    .fill(Color.blue)
+                            )
+                    }
+                }
 
-            // Greeting
-            HStack {
-                Text("Hi, Sarah!")
-                    .font(.title2)
-                    .fontWeight(.medium)
+                // MARK: - Greeting
+                HStack {
 
-                Spacer()
-            }
-            .padding(.horizontal)
+                    Text("Hi, Sarah!")
+                        .font(.title2)
+                        .fontWeight(.semibold)
 
-            // Section 1 - Upcoming Deadlines
-            UpcomingDeadlinesView(
-                assignments: assignmentViewModel.assignments
-            )
+                    Spacer()
+                }
 
-            // Section 2 - Today's Tasks
-            VStack(alignment: .leading, spacing: 12) {
+                // MARK: - Upcoming Deadlines
+                UpcomingDeadlinesView(
+                    assignments: assignmentViewModel.assignments
+                )
 
-                Text("Today's Task")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                // MARK: - Today's Tasks
+                VStack(alignment: .leading, spacing: 16) {
 
-                if !assignmentViewModel.assignments.isEmpty {
+                    Text("Today's Task")
+                        .font(.headline)
+                        .fontWeight(.semibold)
 
-                    ForEach(
-                        $assignmentViewModel.assignments[0].tasks
-                    ) { $task in
+                    if assignmentViewModel.assignments.isEmpty {
 
-                        TaskView(task: $task) {
+                        Text("No tasks available")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
 
-                            let updatedAssignment =
-                                assignmentViewModel.assignments[0]
+                    } else {
 
-                            assignmentViewModel.update(updatedAssignment)
+                        ForEach(
+                            $assignmentViewModel.assignments[0].tasks
+                        ) { $task in
+
+                            TaskView(task: $task) {
+
+                                let updatedAssignment =
+                                    assignmentViewModel.assignments[0]
+
+                                assignmentViewModel.update(
+                                    updatedAssignment
+                                )
+                            }
                         }
                     }
-                } else {
-                    Text("No tasks available")
-                        .foregroundStyle(.secondary)
                 }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color(.systemBackground))
+                        .shadow(
+                            color: .black.opacity(0.06),
+                            radius: 5,
+                            x: 0,
+                            y: 2
+                        )
+                )
+
+                // MARK: - Progress Overview
+                ProgressOverviewView(
+                    progress: assignmentViewModel.overallProgress
+                )
+
+                Spacer(minLength: 20)
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(.systemBackground))
-                    .shadow(radius: 2)
-            )
-            .padding(.horizontal)
-
-            // Section 3 - Progress Overview
-            ProgressOverviewView(
-                progress: assignmentViewModel.overallProgress
-            )
-
-            Spacer()
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
         }
-        .padding(.top)
+        .background(
+            Color(.systemGroupedBackground)
+        )
+
+        // MARK: - Add Assignment Sheet
+        .sheet(isPresented: $showAddAssignment) {
+
+            AddAssignmentView()
+                .environmentObject(assignmentViewModel)
+        }
     }
 }
 
