@@ -8,24 +8,18 @@
 import SwiftUI
 
 struct AssignmentView: View {
-
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
-
     @State private var showAddAssignment = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-
-                // MARK: - Top Navigation
                 HStack {
-
                     Image(systemName: "line.3.horizontal")
                         .font(.title2)
 
                     Spacer()
 
-                    // Add Assignment Button
                     Button {
                         showAddAssignment = true
                     } label: {
@@ -41,9 +35,7 @@ struct AssignmentView: View {
                     }
                 }
 
-                // MARK: - Greeting
                 HStack {
-
                     Text("Hi, Sarah!")
                         .font(.title2)
                         .fontWeight(.semibold)
@@ -51,39 +43,40 @@ struct AssignmentView: View {
                     Spacer()
                 }
 
-                // MARK: - Upcoming Deadlines
                 UpcomingDeadlinesView(
                     assignments: assignmentViewModel.assignments
                 )
 
-                // MARK: - Today's Tasks
                 VStack(alignment: .leading, spacing: 16) {
-
                     Text("Today's Task")
                         .font(.headline)
                         .fontWeight(.semibold)
 
-                    if assignmentViewModel.assignments.isEmpty {
-
-                        Text("No tasks available")
+                    if assignmentViewModel.todayTasks.isEmpty {
+                        Text("No tasks for today")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-
                     } else {
-
-                        ForEach(
-                            $assignmentViewModel.assignments[0].tasks
-                        ) { $task in
-
-                            TaskView(task: $task) {
-
-                                let updatedAssignment =
-                                    assignmentViewModel.assignments[0]
-
-                                assignmentViewModel.update(
-                                    updatedAssignment
+                        ForEach(assignmentViewModel.todayTasks) { task in
+                            Button {
+                                assignmentViewModel.toggleTask(
+                                    taskID: task.id
                                 )
+                            } label: {
+                                HStack(spacing: 12) {
+                                    Image(
+                                        systemName: task.isCompleted
+                                        ? "checkmark.square.fill"
+                                        : "square"
+                                    )
+
+                                    Text(task.title)
+                                        .strikethrough(task.isCompleted)
+
+                                    Spacer()
+                                }
                             }
+                            .buttonStyle(.plain)
                         }
                     }
                 }
@@ -99,7 +92,6 @@ struct AssignmentView: View {
                         )
                 )
 
-                // MARK: - Progress Overview
                 ProgressOverviewView(
                     progress: assignmentViewModel.overallProgress
                 )
@@ -112,10 +104,7 @@ struct AssignmentView: View {
         .background(
             Color(.systemGroupedBackground)
         )
-
-        // MARK: - Add Assignment Sheet
         .sheet(isPresented: $showAddAssignment) {
-
             AddAssignmentView()
                 .environmentObject(assignmentViewModel)
         }

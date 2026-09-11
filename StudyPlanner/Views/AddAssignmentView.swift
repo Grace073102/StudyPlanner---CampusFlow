@@ -225,21 +225,21 @@ struct AddAssignmentView: View {
     }
 
     private func saveAssignment() {
-        let newAssignment = Assignment(
-            title: title,
-            course: course,
-            dueDate: dueDate,
-            priority: priority,
-            description: description,
-            tasks: []
-        )
-        assignmentViewModel.add(newAssignment)
-        dismiss()
+        do {
+            try assignmentViewModel.add(
+                title: title,
+                course: course,
+                dueDate: dueDate,
+                priority: priority,
+                description: description
+            )
+            dismiss()
+        } catch {
+            print(error.localizedDescription)
+        }
     }
 
-    private func priorityColor(
-        _ priority: Assignment.Priority
-    ) -> Color {
+    private func priorityColor(_ priority: Assignment.Priority) -> Color {
         switch priority {
         case .high:
             return .red
