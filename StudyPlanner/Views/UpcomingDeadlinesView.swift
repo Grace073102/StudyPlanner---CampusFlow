@@ -5,13 +5,6 @@
 //  Created by Grace Chi Yen Chong on 9/9/2026.
 //
 
-//
-//  UpcomingDeadlinesView.swift
-//  StudyPlanner
-//
-//  Created by Grace Chi Yen Chong on 9/9/2026.
-//
-
 import SwiftUI
 
 struct UpcomingDeadlinesView: View {
@@ -19,14 +12,9 @@ struct UpcomingDeadlinesView: View {
     let assignments: [Assignment]
 
     var body: some View {
-
         VStack(alignment: .leading, spacing: 12) {
-
-            // MARK: - Header
             HStack {
-
                 VStack(alignment: .leading, spacing: 3) {
-
                     Text("Upcoming Deadlines")
                         .font(.headline)
                         .fontWeight(.bold)
@@ -35,16 +23,12 @@ struct UpcomingDeadlinesView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-
                 Spacer()
-
-                Button {
-                    // Navigation will be added later
+                NavigationLink {
+                    AssignmentListView()
                 } label: {
-
                     HStack(spacing: 3) {
                         Text("View All")
-
                         Image(systemName: "chevron.right")
                     }
                     .font(.caption)
@@ -52,45 +36,24 @@ struct UpcomingDeadlinesView: View {
                 }
             }
 
-            // MARK: - Assignment List
             if assignments.isEmpty {
-
                 Text("No upcoming deadlines")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-
             } else {
-
                 ForEach(
                     assignments
                         .sorted { $0.dueDate < $1.dueDate }
                         .prefix(3)
                 ) { assignment in
-
                     HStack(spacing: 0) {
-
-                        // MARK: Priority Bar
                         RoundedRectangle(cornerRadius: 3)
-                            .fill(
-                                priorityColor(
-                                    assignment.priority
-                                )
-                            )
-                            .frame(
-                                width: 4,
-                                height: 52
-                            )
-
-                        // MARK: Assignment Information
+                            .fill(priorityColor(assignment.priority))
+                            .frame(width: 4, height: 52)
                         HStack {
-
-                            VStack(
-                                alignment: .leading,
-                                spacing: 2
-                            ) {
-
+                            VStack(alignment: .leading, spacing: 2) {
                                 Text(assignment.title)
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
@@ -101,10 +64,7 @@ struct UpcomingDeadlinesView: View {
                                     .foregroundStyle(.secondary)
                                     .lineLimit(1)
                             }
-
                             Spacer()
-
-                            // Due Date
                             Text(
                                 assignment.dueDate,
                                 format: .dateTime
@@ -114,7 +74,6 @@ struct UpcomingDeadlinesView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
-                            // Priority Badge
                             Text(assignment.priority.rawValue)
                                 .font(.caption2)
                                 .fontWeight(.semibold)
@@ -160,60 +119,16 @@ struct UpcomingDeadlinesView: View {
         )
     }
 
-    // MARK: - Priority Colour
     private func priorityColor(
         _ priority: Assignment.Priority
     ) -> Color {
-
         switch priority {
-
         case .high:
             return .red
-
         case .medium:
             return .orange
-
         case .low:
             return .green
         }
     }
-}
-
-
-// MARK: - Preview
-#Preview {
-
-    UpcomingDeadlinesView(
-        assignments: [
-
-            Assignment(
-                title: "Database Assignment",
-                course: "Database Systems",
-                dueDate: Date().addingTimeInterval(86400 * 2),
-                priority: .high,
-                description: "Complete the database assignment",
-                tasks: []
-            ),
-
-            Assignment(
-                title: "UI/UX Project",
-                course: "UI/UX Design",
-                dueDate: Date().addingTimeInterval(86400 * 5),
-                priority: .medium,
-                tasks: []
-            ),
-
-            Assignment(
-                title: "Marketing Quiz",
-                course: "Marketing",
-                dueDate: Date().addingTimeInterval(86400 * 7),
-                priority: .low,
-                tasks: []
-            )
-        ]
-    )
-    .padding()
-    .background(
-        Color(.systemGroupedBackground)
-    )
 }

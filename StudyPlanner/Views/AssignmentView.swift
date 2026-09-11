@@ -12,101 +12,121 @@ struct AssignmentView: View {
     @State private var showAddAssignment = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                HStack {
-                    Image(systemName: "line.3.horizontal")
-                        .font(.title2)
-
-                    Spacer()
-
-                    Button {
-                        showAddAssignment = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.title3)
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    HStack {
+                        Text("Hi, Sarah!")
+                            .font(.title)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.white)
-                            .frame(width: 36, height: 36)
-                            .background(
-                                Circle()
-                                    .fill(Color.blue)
-                            )
-                    }
-                }
 
-                HStack {
-                    Text("Hi, Sarah!")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-
-                    Spacer()
-                }
-
-                UpcomingDeadlinesView(
-                    assignments: assignmentViewModel.assignments
-                )
-
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Today's Task")
-                        .font(.headline)
-                        .fontWeight(.semibold)
-
-                    if assignmentViewModel.todayTasks.isEmpty {
-                        Text("No tasks for today")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(assignmentViewModel.todayTasks) { task in
-                            Button {
-                                assignmentViewModel.toggleTask(
-                                    taskID: task.id
+                        Spacer()
+                        
+                        Button {
+                            showAddAssignment = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.white)
+                                .frame(width: 36, height: 36)
+                                .background(
+                                    Circle()
+                                        .fill(Color.blue)
                                 )
-                            } label: {
-                                HStack(spacing: 12) {
-                                    Image(
-                                        systemName: task.isCompleted
-                                        ? "checkmark.square.fill"
-                                        : "square"
-                                    )
-
-                                    Text(task.title)
-                                        .strikethrough(task.isCompleted)
-
-                                    Spacer()
-                                }
-                            }
-                            .buttonStyle(.plain)
                         }
                     }
+
+                    UpcomingDeadlinesView(
+                        assignments: assignmentViewModel.assignments
+                    )
+
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text("Upcoming Tasks")
+                                    .font(.headline)
+                                    .fontWeight(.semibold)
+
+                                Text("Tasks due within the next 7 days")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+
+                            NavigationLink {
+                                DetailTaskView()
+                                    .environmentObject(
+                                        assignmentViewModel
+                                    )
+                            } label: {
+                                HStack(spacing: 3) {
+                                    Text("View All")
+
+                                    Image(
+                                        systemName: "chevron.right"
+                                    )
+                                }
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                            }
+                        }
+
+                        if assignmentViewModel.todayTasks.isEmpty {
+                            Text("No tasks due within the next 7 days")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            ForEach(
+                                assignmentViewModel.todayTasks
+                            ) { task in
+
+                                TaskView(task: task) {
+                                    assignmentViewModel.toggleTask(
+                                        taskID: task.id
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    .padding(16)
+                    .frame(
+                        maxWidth: .infinity,
+                        alignment: .leading
+                    )
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.systemBackground))
+                            .shadow(
+                                color: .black.opacity(0.06),
+                                radius: 5,
+                                x: 0,
+                                y: 2
+                            )
+                    )
+
+                    ProgressOverviewView(
+                        progress:
+                            assignmentViewModel.overallProgress
+                    )
+
+                    Spacer(minLength: 20)
                 }
-                .padding(16)
-                .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(.systemBackground))
-                        .shadow(
-                            color: .black.opacity(0.06),
-                            radius: 5,
-                            x: 0,
-                            y: 2
-                        )
-                )
-
-                ProgressOverviewView(
-                    progress: assignmentViewModel.overallProgress
-                )
-
-                Spacer(minLength: 20)
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
-        }
-        .background(
-            Color(.systemGroupedBackground)
-        )
-        .sheet(isPresented: $showAddAssignment) {
-            AddAssignmentView()
-                .environmentObject(assignmentViewModel)
+            .background(
+                Color(.systemGroupedBackground)
+            )
+            .sheet(
+                isPresented: $showAddAssignment
+            ) {
+                AddAssignmentView()
+                    .environmentObject(
+                        assignmentViewModel
+                    )
+            }
         }
     }
 }
@@ -115,7 +135,8 @@ struct AssignmentView: View {
     AssignmentView()
         .environmentObject(
             AssignmentViewModel(
-                repository: LocalAssignmentRepository()
+                repository:
+                    LocalAssignmentRepository()
             )
         )
 }
