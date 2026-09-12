@@ -17,7 +17,11 @@ final class AssignmentViewModel: ObservableObject {
 
     init(repository: AssignmentRepository) {
         self.repository = repository
-        self.addAssignmentUseCase = AddAssignmentUseCase(repository: repository)
+        self.addAssignmentUseCase =
+            AddAssignmentUseCase(
+                repository: repository
+            )
+
         load()
     }
 
@@ -53,132 +57,20 @@ final class AssignmentViewModel: ObservableObject {
         assignments = repository.assignments
     }
 
-    func addTask(
-        title: String,
-        to assignmentID: String
-    ) {
-        let cleanedTitle = title.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
-
-        guard !cleanedTitle.isEmpty else {
-            return
-        }
-
-        guard let assignmentIndex = assignments.firstIndex(
-            where: { $0.id == assignmentID }
-        ) else {
-            return
-        }
-
-        let newTask = AcademicTask(
-            title: cleanedTitle,
-            isCompleted: false
-        )
-
-        assignments[assignmentIndex].tasks.append(
-            newTask
-        )
-
-        repository.update(
-            assignments[assignmentIndex]
-        )
-
-        assignments = repository.assignments
-    }
-    
-    func editTask(
-        taskID: String,
-        newTitle: String
-    ) {
-        let cleanedTitle = newTitle.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
-
-        guard !cleanedTitle.isEmpty else {
-            return
-        }
-
-        for assignmentIndex in assignments.indices {
-            if let taskIndex = assignments[assignmentIndex].tasks.firstIndex(
-                where: { $0.id == taskID }
-            ) {
-                assignments[assignmentIndex].tasks[taskIndex].title = cleanedTitle
-                repository.update(assignments[assignmentIndex])
-                assignments = repository.assignments
-                return
-            }
-        }
-    }
-
-    func deleteTask(taskID: String) {
-        for assignmentIndex in assignments.indices {
-            if let taskIndex = assignments[assignmentIndex].tasks.firstIndex(
-                where: { $0.id == taskID }
-            ) {
-                assignments[assignmentIndex].tasks.remove(
-                    at: taskIndex
-                )
-                repository.update(assignments[assignmentIndex])
-                assignments = repository.assignments
-                return
-            }
-        }
-    }
-
-    func toggleTask(taskID: String) {
-        for assignmentIndex in assignments.indices {
-            if let taskIndex = assignments[assignmentIndex].tasks.firstIndex(
-                where: { $0.id == taskID }
-            ) {
-                assignments[assignmentIndex].tasks[taskIndex].isCompleted.toggle()
-
-                repository.update(
-                    assignments[assignmentIndex]
-                )
-
-                assignments = repository.assignments
-
-                return
-            }
-        }
-    }
-
-    var allTasks: [AcademicTask] {
-        assignments.flatMap { $0.tasks }
-    }
-
-    var todayTasks: [AcademicTask] {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-
-        guard let oneWeekLater = calendar.date(
-            byAdding: .day,
-            value: 7,
-            to: today
-        ) else {
-            return []
-        }
-
-        return assignments
-            .filter {
-                $0.dueDate >= today &&
-                $0.dueDate <= oneWeekLater
-            }
-            .flatMap { $0.tasks }
-    }
-
     var overallProgress: Double {
-        let allTasks = assignments.flatMap { $0.tasks }
+        let allTasks =
+            assignments.flatMap { $0.tasks }
 
         guard !allTasks.isEmpty else {
             return 0
         }
 
-        let completedTasks = allTasks.filter {
-            $0.isCompleted
-        }.count
+        let completedTasks =
+            allTasks.filter {
+                $0.isCompleted
+            }.count
 
-        return Double(completedTasks) / Double(allTasks.count)
+        return Double(completedTasks) /
+            Double(allTasks.count)
     }
 }

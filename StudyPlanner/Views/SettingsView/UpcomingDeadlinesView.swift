@@ -119,9 +119,7 @@ struct UpcomingDeadlinesView: View {
         )
     }
 
-    private func priorityColor(
-        _ priority: Assignment.Priority
-    ) -> Color {
+    private func priorityColor(_ priority: Assignment.Priority) -> Color {
         switch priority {
         case .high:
             return .red

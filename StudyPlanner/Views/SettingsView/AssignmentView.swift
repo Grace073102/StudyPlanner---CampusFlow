@@ -9,6 +9,8 @@ import SwiftUI
 
 struct AssignmentView: View {
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
+    @EnvironmentObject var taskViewModel: TaskViewModel
+
     @State private var showAddAssignment = false
 
     var body: some View {
@@ -17,11 +19,11 @@ struct AssignmentView: View {
                 VStack(spacing: 20) {
                     HStack {
                         Text("Hi, Sarah!")
-                            .font(.title)
+                            .font(.title2)
                             .fontWeight(.semibold)
 
                         Spacer()
-                        
+
                         Button {
                             showAddAssignment = true
                         } label: {
@@ -35,22 +37,32 @@ struct AssignmentView: View {
                                         .fill(Color.blue)
                                 )
                         }
+                        .buttonStyle(.plain)
                     }
 
                     UpcomingDeadlinesView(
-                        assignments: assignmentViewModel.assignments
+                        assignments:
+                            assignmentViewModel.assignments
                     )
 
-                    VStack(alignment: .leading, spacing: 16) {
+                    VStack(
+                        alignment: .leading,
+                        spacing: 16
+                    ) {
                         HStack(alignment: .top) {
-                            VStack(alignment: .leading, spacing: 3) {
+                            VStack(
+                                alignment: .leading,
+                                spacing: 3
+                            ) {
                                 Text("Upcoming Tasks")
                                     .font(.headline)
                                     .fontWeight(.semibold)
 
-                                Text("Tasks due within the next 7 days")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                                Text(
+                                    "Tasks due within the next 7 days"
+                                )
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                             }
 
                             Spacer()
@@ -60,12 +72,16 @@ struct AssignmentView: View {
                                     .environmentObject(
                                         assignmentViewModel
                                     )
+                                    .environmentObject(
+                                        taskViewModel
+                                    )
                             } label: {
                                 HStack(spacing: 3) {
                                     Text("View All")
 
                                     Image(
-                                        systemName: "chevron.right"
+                                        systemName:
+                                            "chevron.right"
                                     )
                                 }
                                 .font(.caption)
@@ -73,17 +89,19 @@ struct AssignmentView: View {
                             }
                         }
 
-                        if assignmentViewModel.todayTasks.isEmpty {
-                            Text("No tasks due within the next 7 days")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                        if taskViewModel
+                            .upcomingTasks.isEmpty {
+                            Text(
+                                "No tasks due within the next 7 days"
+                            )
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                         } else {
                             ForEach(
-                                assignmentViewModel.todayTasks
+                                taskViewModel.upcomingTasks
                             ) { task in
-
                                 TaskView(task: task) {
-                                    assignmentViewModel.toggleTask(
+                                    taskViewModel.toggleTask(
                                         taskID: task.id
                                     )
                                 }
@@ -96,19 +114,24 @@ struct AssignmentView: View {
                         alignment: .leading
                     )
                     .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color(.systemBackground))
-                            .shadow(
-                                color: .black.opacity(0.06),
-                                radius: 5,
-                                x: 0,
-                                y: 2
-                            )
+                        RoundedRectangle(
+                            cornerRadius: 20
+                        )
+                        .fill(
+                            Color(.systemBackground)
+                        )
+                        .shadow(
+                            color: .black.opacity(0.06),
+                            radius: 5,
+                            x: 0,
+                            y: 2
+                        )
                     )
 
                     ProgressOverviewView(
                         progress:
-                            assignmentViewModel.overallProgress
+                            assignmentViewModel
+                                .overallProgress
                     )
 
                     Spacer(minLength: 20)
@@ -129,14 +152,4 @@ struct AssignmentView: View {
             }
         }
     }
-}
-
-#Preview {
-    AssignmentView()
-        .environmentObject(
-            AssignmentViewModel(
-                repository:
-                    LocalAssignmentRepository()
-            )
-        )
 }

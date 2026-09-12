@@ -30,9 +30,7 @@ struct TaskView: View {
             Text(task.title)
                 .strikethrough(task.isCompleted)
                 .foregroundStyle(
-                    task.isCompleted
-                    ? .secondary
-                    : .primary
+                    task.isCompleted ? .secondary : .primary
                 )
 
             Spacer()

@@ -11,7 +11,7 @@ import SwiftUI
 struct StudyPlannerApp: App {
     var body: some Scene {
         WindowGroup {
-            AssignmentView()
+            RootView()
         }
     }
 }
