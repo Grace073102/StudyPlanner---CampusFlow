@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AddAssignmentView: View {
-
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
     @Environment(\.dismiss) private var dismiss
 
@@ -17,12 +16,13 @@ struct AddAssignmentView: View {
     @State private var dueDate = Date()
     @State private var priority: Assignment.Priority = .high
     @State private var description = ""
+    @State private var errorMessage = ""
+    @State private var showError = false
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-
                     VStack(alignment: .leading, spacing: 7) {
                         Text("Assignment Title")
                             .font(.subheadline)
@@ -71,6 +71,7 @@ struct AddAssignmentView: View {
                         DatePicker(
                             "",
                             selection: $dueDate,
+                            in: Date()...,
                             displayedComponents: .date
                         )
                         .labelsHidden()
@@ -149,8 +150,8 @@ struct AddAssignmentView: View {
                                     Color.gray.opacity(0.4),
                                     lineWidth: 1
                                 )
-                            if description.isEmpty {
 
+                            if description.isEmpty {
                                 Text("Enter assignment details...")
                                     .foregroundStyle(.secondary)
                                     .padding(.horizontal, 14)
@@ -183,12 +184,9 @@ struct AddAssignmentView: View {
                 }
                 .padding(20)
             }
-
             .navigationTitle("Add Assignment")
             .navigationBarTitleDisplayMode(.inline)
-
             .toolbar {
-                // Back
                 ToolbarItem(
                     placement: .cancellationAction
                 ) {
@@ -199,19 +197,15 @@ struct AddAssignmentView: View {
                             .foregroundStyle(.primary)
                     }
                 }
-
-                // Save
-                ToolbarItem(
-                    placement: .confirmationAction
-                ) {
-                    Button {
-                        saveAssignment()
-                    } label: {
-                        Image(systemName: "checkmark")
-                            .fontWeight(.semibold)
-                    }
-                    .disabled(!isValid)
+            }
+            .alert(
+                "Unable to Add Assignment",
+                isPresented: $showError
+            ) {
+                Button("OK", role: .cancel) {
                 }
+            } message: {
+                Text(errorMessage)
             }
         }
     }
@@ -219,7 +213,8 @@ struct AddAssignmentView: View {
     private var isValid: Bool {
         !title.trimmingCharacters(
             in: .whitespacesAndNewlines
-        ).isEmpty && !course.trimmingCharacters(
+        ).isEmpty &&
+        !course.trimmingCharacters(
             in: .whitespacesAndNewlines
         ).isEmpty
     }
@@ -233,9 +228,11 @@ struct AddAssignmentView: View {
                 priority: priority,
                 description: description
             )
+
             dismiss()
         } catch {
-            print(error.localizedDescription)
+            errorMessage = error.localizedDescription
+            showError = true
         }
     }
 

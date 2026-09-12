@@ -9,9 +9,12 @@ import SwiftUI
 
 struct AssignmentDetailView: View {
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
-    @EnvironmentObject var taskViewModel: TaskViewModel
-
     let assignment: Assignment
+
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var showEditAssignment = false
+    @State private var showDeleteConfirmation = false
 
     var body: some View {
         ScrollView {
@@ -35,6 +38,10 @@ struct AssignmentDetailView: View {
                             .foregroundStyle(.secondary)
                     }
                     .padding(16)
+                    .frame(
+                        maxWidth: .infinity,
+                        alignment: .leading
+                    )
                     .background(
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color(.systemBackground))
@@ -48,6 +55,66 @@ struct AssignmentDetailView: View {
         )
         .navigationTitle(currentAssignment.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                HStack(spacing: 4) {
+                    Button {
+                        showEditAssignment = true
+                    } label: {
+                        Image(systemName: "pencil")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.blue)
+                            .frame(width: 26, height: 26)
+                    }
+
+                    Button {
+                        showDeleteConfirmation = true
+                    } label: {
+                        Image(systemName: "trash")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.red)
+                            .frame(width: 26, height: 26)
+                    }
+                }
+                .padding(.horizontal, 3)
+                .padding(.vertical, 2)
+            }
+        }
+        .sheet(
+            isPresented: $showEditAssignment
+        ) {
+            EditAssignmentView(
+                assignment: currentAssignment
+            )
+            .environmentObject(
+                assignmentViewModel
+            )
+        }
+        .alert(
+            "Delete Assignment?",
+            isPresented: $showDeleteConfirmation
+        ) {
+            Button(
+                "Delete",
+                role: .destructive
+            ) {
+                assignmentViewModel.delete(
+                    currentAssignment
+                )
+
+                dismiss()
+            }
+
+            Button(
+                "Cancel",
+                role: .cancel
+            ) {
+            }
+        } message: {
+            Text(
+                "This assignment and all of its subtasks will be permanently deleted."
+            )
+        }
     }
 
     private var currentAssignment: Assignment {
