@@ -8,12 +8,16 @@
 import SwiftUI
 
 struct AssignmentDetailView: View {
-
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
-
     let assignment: Assignment
 
     @State private var newTaskTitle = ""
+    @State private var editingTaskID = ""
+    @State private var editingTaskTitle = ""
+    @State private var showEditTask = false
+    @State private var deletingTaskID = ""
+    @State private var showDeleteConfirmation = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -38,14 +42,16 @@ struct AssignmentDetailView: View {
                             .fontWeight(.bold)
                             .foregroundStyle(.blue)
                     }
-                    
+
                     ProgressView(value: assignmentProgress)
                         .tint(.blue)
                         .scaleEffect(x: 1, y: 1.5)
+
                     HStack {
                         HStack(spacing: 6) {
                             Image(systemName: "calendar")
                                 .font(.caption)
+
                             Text(
                                 currentAssignment.dueDate,
                                 format: .dateTime
@@ -129,17 +135,20 @@ struct AssignmentDetailView: View {
                                 ),
                                 id: \.element.id
                             ) { index, task in
-                                Button {
-                                    withAnimation {
-                                        assignmentViewModel.toggleTask(
-                                            taskID: task.id
-                                        )
-                                    }
-                                } label: {
-                                    HStack(spacing: 12) {
+
+                                HStack(spacing: 12) {
+                                    Button {
+                                        withAnimation {
+                                            assignmentViewModel.toggleTask(
+                                                taskID: task.id
+                                            )
+                                        }
+                                    } label: {
                                         Image(
                                             systemName:
-                                                task.isCompleted ? "checkmark.square.fill" : "square"
+                                                task.isCompleted
+                                                ? "checkmark.square.fill"
+                                                : "square"
                                         )
                                         .font(.title3)
                                         .foregroundStyle(
@@ -147,35 +156,70 @@ struct AssignmentDetailView: View {
                                             ? .blue
                                             : .secondary
                                         )
-                                        Text(task.title)
-                                            .font(.subheadline)
-                                            .foregroundStyle(
-                                                task.isCompleted
-                                                ? .secondary
-                                                : .primary
-                                            )
-                                            .strikethrough(
-                                                task.isCompleted
-                                            )
-
-                                        Spacer()
-
-                                        if task.isCompleted {
-                                            Image(
-                                                systemName: "checkmark"
-                                            )
-                                            .font(.caption)
-                                            .fontWeight(.bold)
-                                            .foregroundStyle(.blue)
-                                        }
                                     }
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 14)
-                                    .contentShape(Rectangle())
-                                }
-                                .buttonStyle(.plain)
+                                    .buttonStyle(.plain)
 
-                                if index < currentAssignment.tasks.count - 1 {
+                                    Text(task.title)
+                                        .font(.subheadline)
+                                        .foregroundStyle(
+                                            task.isCompleted
+                                            ? .secondary
+                                            : .primary
+                                        )
+                                        .strikethrough(
+                                            task.isCompleted
+                                        )
+
+                                    Spacer()
+
+                                    Button {
+                                        editingTaskID = task.id
+                                        editingTaskTitle = task.title
+                                        showEditTask = true
+                                    } label: {
+                                        Image(systemName: "pencil")
+                                            .font(.subheadline)
+                                            .foregroundStyle(.blue)
+                                            .frame(
+                                                width: 30,
+                                                height: 30
+                                            )
+                                            .background(
+                                                Circle()
+                                                    .fill(
+                                                        Color.blue
+                                                            .opacity(0.10)
+                                                    )
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+
+                                    Button {
+                                        deletingTaskID = task.id
+                                        showDeleteConfirmation = true
+                                    } label: {
+                                        Image(systemName: "trash")
+                                            .font(.subheadline)
+                                            .foregroundStyle(.red)
+                                            .frame(
+                                                width: 30,
+                                                height: 30
+                                            )
+                                            .background(
+                                                Circle()
+                                                    .fill(
+                                                        Color.red
+                                                            .opacity(0.10)
+                                                    )
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 12)
+
+                                if index <
+                                    currentAssignment.tasks.count - 1 {
                                     Divider()
                                         .padding(.leading, 48)
                                 }
@@ -189,16 +233,32 @@ struct AssignmentDetailView: View {
                             RoundedRectangle(cornerRadius: 14)
                         )
                     }
+                }
+
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(.blue)
+
+                        Text("Add New Subtask")
+                            .font(.headline)
+                            .fontWeight(.semibold)
+                    }
 
                     HStack(spacing: 10) {
-                        TextField(
-                            "Add a new subtask",
-                            text: $newTaskTitle
-                        )
+                        HStack(spacing: 8) {
+                            Image(systemName: "checklist")
+                                .foregroundStyle(.secondary)
+
+                            TextField(
+                                "Enter subtask title",
+                                text: $newTaskTitle
+                            )
+                        }
                         .padding(.horizontal, 12)
-                        .frame(height: 42)
+                        .frame(height: 46)
                         .background(
-                            RoundedRectangle(cornerRadius: 10)
+                            RoundedRectangle(cornerRadius: 12)
                                 .fill(
                                     Color(
                                         .secondarySystemBackground
@@ -209,15 +269,19 @@ struct AssignmentDetailView: View {
                         Button {
                             addTask()
                         } label: {
-                            Image(systemName: "plus")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.white)
-                                .frame(width: 42, height: 42)
-                                .background(
-                                    Circle()
-                                        .fill(Color.blue)
-                                )
+                            HStack(spacing: 5) {
+                                Image(systemName: "plus")
+                                Text("Add")
+                            }
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 14)
+                            .frame(height: 46)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.blue)
+                            )
                         }
                         .disabled(
                             newTaskTitle
@@ -237,6 +301,17 @@ struct AssignmentDetailView: View {
                         )
                     }
                 }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(.systemBackground))
+                        .shadow(
+                            color: .black.opacity(0.04),
+                            radius: 4,
+                            x: 0,
+                            y: 2
+                        )
+                )
 
                 if let description = currentAssignment.description,
                    !description.isEmpty {
@@ -266,13 +341,54 @@ struct AssignmentDetailView: View {
         )
         .navigationTitle(currentAssignment.title)
         .navigationBarTitleDisplayMode(.inline)
+        .alert(
+            "Edit Subtask",
+            isPresented: $showEditTask
+        ) {
+            TextField(
+                "Subtask title",
+                text: $editingTaskTitle
+            )
+
+            Button("Cancel", role: .cancel) {
+            }
+
+            Button("Save") {
+                assignmentViewModel.editTask(
+                    taskID: editingTaskID,
+                    newTitle: editingTaskTitle
+                )
+            }
+        }
+        .alert(
+            "Delete Subtask?",
+            isPresented: $showDeleteConfirmation
+        ) {
+            Button(
+                "Delete",
+                role: .destructive
+            ) {
+                assignmentViewModel.deleteTask(
+                    taskID: deletingTaskID
+                )
+            }
+
+            Button(
+                "Cancel",
+                role: .cancel
+            ) {
+            }
+        } message: {
+            Text(
+                "This subtask will be permanently removed."
+            )
+        }
     }
 
     private var currentAssignment: Assignment {
         assignmentViewModel.assignments.first {
             $0.id == assignment.id
         } ?? assignment
-
     }
 
     private var completedTaskCount: Int {
@@ -285,30 +401,23 @@ struct AssignmentDetailView: View {
         guard !currentAssignment.tasks.isEmpty else {
             return 0
         }
-        return Double(completedTaskCount) / Double(currentAssignment.tasks.count)
+
+        return Double(completedTaskCount) /
+            Double(currentAssignment.tasks.count)
     }
 
     private func addTask() {
-        let cleanedTitle = newTaskTitle.trimmingCharacters(
-            in: .whitespacesAndNewlines
+        assignmentViewModel.addTask(
+            title: newTaskTitle,
+            to: assignment.id
         )
-        guard !cleanedTitle.isEmpty else {
-            return
-        }
 
-        var updatedAssignment = currentAssignment
-
-        updatedAssignment.tasks.append(
-            AcademicTask(
-                title: cleanedTitle,
-                isCompleted: false
-            )
-        )
-        assignmentViewModel.update(updatedAssignment)
         newTaskTitle = ""
     }
 
-    private func priorityColor(_ priority: Assignment.Priority) -> Color {
+    private func priorityColor(
+        _ priority: Assignment.Priority
+    ) -> Color {
         switch priority {
         case .high:
             return .red
