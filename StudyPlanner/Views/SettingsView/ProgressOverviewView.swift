@@ -108,16 +108,3 @@ struct ProgressOverviewView: View {
         }
     }
 }
-
-
-// MARK: - Preview
-
-#Preview {
-    ProgressOverviewView(
-        progress: 0.5
-    )
-    .padding()
-    .background(
-        Color(.systemGroupedBackground)
-    )
-}

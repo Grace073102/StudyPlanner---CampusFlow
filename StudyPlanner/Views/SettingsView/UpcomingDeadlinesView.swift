@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct UpcomingDeadlinesView: View {
-
     let assignments: [Assignment]
 
     var body: some View {
@@ -23,7 +22,9 @@ struct UpcomingDeadlinesView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
+
                 Spacer()
+
                 NavigationLink {
                     AssignmentListView()
                 } label: {
@@ -50,8 +51,9 @@ struct UpcomingDeadlinesView: View {
                 ) { assignment in
                     HStack(spacing: 0) {
                         RoundedRectangle(cornerRadius: 3)
-                            .fill(priorityColor(assignment.priority))
+                            .fill(assignment.priority.color)
                             .frame(width: 4, height: 52)
+
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(assignment.title)
@@ -64,7 +66,9 @@ struct UpcomingDeadlinesView: View {
                                     .foregroundStyle(.secondary)
                                     .lineLimit(1)
                             }
+
                             Spacer()
+
                             Text(
                                 assignment.dueDate,
                                 format: .dateTime
@@ -78,17 +82,13 @@ struct UpcomingDeadlinesView: View {
                                 .font(.caption2)
                                 .fontWeight(.semibold)
                                 .foregroundStyle(
-                                    priorityColor(
-                                        assignment.priority
-                                    )
+                                    assignment.priority.color
                                 )
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
                                 .background(
-                                    priorityColor(
-                                        assignment.priority
-                                    )
-                                    .opacity(0.12)
+                                    assignment.priority.color
+                                        .opacity(0.12)
                                 )
                                 .clipShape(Capsule())
                         }
@@ -117,16 +117,5 @@ struct UpcomingDeadlinesView: View {
                     y: 2
                 )
         )
-    }
-
-    private func priorityColor(_ priority: Assignment.Priority) -> Color {
-        switch priority {
-        case .high:
-            return .red
-        case .medium:
-            return .orange
-        case .low:
-            return .green
-        }
     }
 }

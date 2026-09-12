@@ -96,27 +96,20 @@ struct AddAssignmentView: View {
                             .fontWeight(.semibold)
 
                         Menu {
-                            Button {
-                                priority = .high
-                            } label: {
-                                Text("High")
-                            }
-
-                            Button {
-                                priority = .medium
-                            } label: {
-                                Text("Medium")
-                            }
-
-                            Button {
-                                priority = .low
-                            } label: {
-                                Text("Low")
+                            ForEach(
+                                Assignment.Priority.allCases,
+                                id: \.self
+                            ) { value in
+                                Button {
+                                    priority = value
+                                } label: {
+                                    Text(value.rawValue)
+                                }
                             }
                         } label: {
                             HStack {
                                 Circle()
-                                    .fill(priorityColor(priority))
+                                    .fill(priority.color)
                                     .frame(width: 9, height: 9)
 
                                 Text(priority.rawValue)
@@ -235,24 +228,4 @@ struct AddAssignmentView: View {
             showError = true
         }
     }
-
-    private func priorityColor(_ priority: Assignment.Priority) -> Color {
-        switch priority {
-        case .high:
-            return .red
-        case .medium:
-            return .orange
-        case .low:
-            return .green
-        }
-    }
-}
-
-#Preview {
-    AddAssignmentView()
-        .environmentObject(
-            AssignmentViewModel(
-                repository: LocalAssignmentRepository()
-            )
-        )
 }

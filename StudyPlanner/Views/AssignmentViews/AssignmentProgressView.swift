@@ -59,17 +59,13 @@ struct AssignmentProgressView: View {
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(
-                        priorityColor(
-                            assignment.priority
-                        )
+                        assignment.priority.color
                     )
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
                     .background(
-                        priorityColor(
-                            assignment.priority
-                        )
-                        .opacity(0.12)
+                        assignment.priority.color
+                            .opacity(0.12)
                     )
                     .clipShape(Capsule())
             }
@@ -92,22 +88,12 @@ struct AssignmentProgressView: View {
             return 0
         }
 
-        let completedTasks = assignment.tasks.filter {
-            $0.isCompleted
-        }.count
+        let completedTasks =
+            assignment.tasks.filter {
+                $0.isCompleted
+            }.count
 
         return Double(completedTasks) /
             Double(assignment.tasks.count)
-    }
-
-    private func priorityColor(_ priority: Assignment.Priority) -> Color {
-        switch priority {
-        case .high:
-            return .red
-        case .medium:
-            return .orange
-        case .low:
-            return .green
-        }
     }
 }

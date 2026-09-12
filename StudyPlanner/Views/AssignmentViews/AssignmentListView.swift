@@ -48,10 +48,12 @@ struct AssignmentListView: View {
                         Text("No assignments yet")
                             .font(.headline)
 
-                        Text("Add an assignment to start organising your deadlines.")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
+                        Text(
+                            "Add an assignment to start organising your deadlines."
+                        )
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.top, 60)
@@ -60,9 +62,6 @@ struct AssignmentListView: View {
                         NavigationLink {
                             AssignmentDetailView(
                                 assignment: assignment
-                            )
-                            .environmentObject(
-                                assignmentViewModel
                             )
                         } label: {
                             HStack(spacing: 14) {
@@ -76,7 +75,8 @@ struct AssignmentListView: View {
 
                                     Text(
                                         assignment.dueDate,
-                                        format: .dateTime.month(.abbreviated)
+                                        format: .dateTime
+                                            .month(.abbreviated)
                                     )
                                     .font(.caption2)
                                     .fontWeight(.semibold)
@@ -87,10 +87,8 @@ struct AssignmentListView: View {
                                 .background(
                                     RoundedRectangle(cornerRadius: 12)
                                         .fill(
-                                            priorityColor(
-                                                assignment.priority
-                                            )
-                                            .opacity(0.10)
+                                            assignment.priority.color
+                                                .opacity(0.10)
                                         )
                                 )
 
@@ -123,23 +121,21 @@ struct AssignmentListView: View {
                                 Spacer()
 
                                 VStack(alignment: .trailing, spacing: 10) {
-                                    Text(assignment.priority.rawValue)
-                                        .font(.caption2)
-                                        .fontWeight(.semibold)
-                                        .foregroundStyle(
-                                            priorityColor(
-                                                assignment.priority
-                                            )
-                                        )
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(
-                                            priorityColor(
-                                                assignment.priority
-                                            )
+                                    Text(
+                                        assignment.priority.rawValue
+                                    )
+                                    .font(.caption2)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(
+                                        assignment.priority.color
+                                    )
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        assignment.priority.color
                                             .opacity(0.12)
-                                        )
-                                        .clipShape(Capsule())
+                                    )
+                                    .clipShape(Capsule())
 
                                     Image(systemName: "chevron.right")
                                         .font(.caption)
@@ -182,29 +178,5 @@ struct AssignmentListView: View {
         assignment.tasks.filter {
             $0.isCompleted
         }.count
-    }
-
-    private func priorityColor(
-        _ priority: Assignment.Priority
-    ) -> Color {
-        switch priority {
-        case .high:
-            return .red
-        case .medium:
-            return .orange
-        case .low:
-            return .green
-        }
-    }
-}
-
-#Preview {
-    NavigationStack {
-        AssignmentListView()
-            .environmentObject(
-                AssignmentViewModel(
-                    repository: LocalAssignmentRepository()
-                )
-            )
     }
 }

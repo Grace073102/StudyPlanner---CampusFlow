@@ -19,9 +19,7 @@ struct EditAssignmentView: View {
     @State private var priority: Assignment.Priority
     @State private var description: String
 
-    init(
-        assignment: Assignment
-    ) {
+    init(assignment: Assignment) {
         self.assignment = assignment
 
         _title = State(
@@ -41,22 +39,15 @@ struct EditAssignmentView: View {
         )
 
         _description = State(
-            initialValue:
-                assignment.description ?? ""
+            initialValue: assignment.description ?? ""
         )
     }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(
-                    alignment: .leading,
-                    spacing: 20
-                ) {
-                    VStack(
-                        alignment: .leading,
-                        spacing: 7
-                    ) {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 7) {
                         Text("Assignment Title")
                             .font(.subheadline)
                             .fontWeight(.semibold)
@@ -68,20 +59,15 @@ struct EditAssignmentView: View {
                         .padding(.horizontal, 14)
                         .frame(height: 48)
                         .background(
-                            RoundedRectangle(
-                                cornerRadius: 10
-                            )
-                            .stroke(
-                                Color.gray.opacity(0.4),
-                                lineWidth: 1
-                            )
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(
+                                    Color.gray.opacity(0.4),
+                                    lineWidth: 1
+                                )
                         )
                     }
 
-                    VStack(
-                        alignment: .leading,
-                        spacing: 7
-                    ) {
+                    VStack(alignment: .leading, spacing: 7) {
                         Text("Course")
                             .font(.subheadline)
                             .fontWeight(.semibold)
@@ -93,20 +79,15 @@ struct EditAssignmentView: View {
                         .padding(.horizontal, 14)
                         .frame(height: 48)
                         .background(
-                            RoundedRectangle(
-                                cornerRadius: 10
-                            )
-                            .stroke(
-                                Color.gray.opacity(0.4),
-                                lineWidth: 1
-                            )
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(
+                                    Color.gray.opacity(0.4),
+                                    lineWidth: 1
+                                )
                         )
                     }
 
-                    VStack(
-                        alignment: .leading,
-                        spacing: 7
-                    ) {
+                    VStack(alignment: .leading, spacing: 7) {
                         Text("Due Date")
                             .font(.subheadline)
                             .fontWeight(.semibold)
@@ -124,20 +105,15 @@ struct EditAssignmentView: View {
                         .padding(.horizontal, 14)
                         .frame(height: 48)
                         .background(
-                            RoundedRectangle(
-                                cornerRadius: 10
-                            )
-                            .stroke(
-                                Color.gray.opacity(0.4),
-                                lineWidth: 1
-                            )
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(
+                                    Color.gray.opacity(0.4),
+                                    lineWidth: 1
+                                )
                         )
                     }
 
-                    VStack(
-                        alignment: .leading,
-                        spacing: 7
-                    ) {
+                    VStack(alignment: .leading, spacing: 7) {
                         Text("Priority")
                             .font(.subheadline)
                             .fontWeight(.semibold)
@@ -147,90 +123,55 @@ struct EditAssignmentView: View {
                                 Assignment.Priority.allCases,
                                 id: \.self
                             ) { value in
-
                                 Button {
                                     priority = value
                                 } label: {
-                                    Text(
-                                        value.rawValue
-                                    )
+                                    Text(value.rawValue)
                                 }
                             }
                         } label: {
                             HStack {
                                 Circle()
-                                    .fill(
-                                        priorityColor(
-                                            priority
-                                        )
-                                    )
-                                    .frame(
-                                        width: 9,
-                                        height: 9
-                                    )
+                                    .fill(priority.color)
+                                    .frame(width: 9, height: 9)
 
-                                Text(
-                                    priority.rawValue
-                                )
-                                .foregroundStyle(
-                                    .primary
-                                )
+                                Text(priority.rawValue)
+                                    .foregroundStyle(.primary)
 
                                 Spacer()
 
-                                Image(
-                                    systemName:
-                                        "chevron.down"
-                                )
-                                .foregroundStyle(
-                                    .secondary
-                                )
+                                Image(systemName: "chevron.down")
+                                    .foregroundStyle(.secondary)
                             }
-                            .padding(
-                                .horizontal,
-                                14
-                            )
+                            .padding(.horizontal, 14)
                             .frame(height: 48)
                             .background(
-                                RoundedRectangle(
-                                    cornerRadius: 10
-                                )
-                                .stroke(
-                                    Color.gray
-                                        .opacity(0.4),
-                                    lineWidth: 1
-                                )
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(
+                                        Color.gray.opacity(0.4),
+                                        lineWidth: 1
+                                    )
                             )
                         }
                     }
 
-                    VStack(
-                        alignment: .leading,
-                        spacing: 7
-                    ) {
-                        Text(
-                            "Description (Optional)"
-                        )
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                    VStack(alignment: .leading, spacing: 7) {
+                        Text("Description (Optional)")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
 
                         TextEditor(
                             text: $description
                         )
                         .padding(8)
                         .frame(height: 120)
-                        .scrollContentBackground(
-                            .hidden
-                        )
+                        .scrollContentBackground(.hidden)
                         .background(
-                            RoundedRectangle(
-                                cornerRadius: 10
-                            )
-                            .stroke(
-                                Color.gray
-                                    .opacity(0.4),
-                                lineWidth: 1
-                            )
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(
+                                    Color.gray.opacity(0.4),
+                                    lineWidth: 1
+                                )
                         )
                     }
 
@@ -238,41 +179,25 @@ struct EditAssignmentView: View {
                         saveChanges()
                     } label: {
                         Text("Save Changes")
-                            .fontWeight(
-                                .semibold
-                            )
-                            .foregroundStyle(
-                                .white
-                            )
-                            .frame(
-                                maxWidth:
-                                    .infinity
-                            )
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
                             .frame(height: 50)
                             .background(
-                                RoundedRectangle(
-                                    cornerRadius: 12
-                                )
-                                .fill(Color.blue)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color.blue)
                             )
                     }
                     .disabled(!isValid)
-                    .opacity(
-                        isValid ? 1 : 0.5
-                    )
+                    .opacity(isValid ? 1 : 0.5)
                 }
                 .padding(20)
             }
-            .navigationTitle(
-                "Edit Assignment"
-            )
-            .navigationBarTitleDisplayMode(
-                .inline
-            )
+            .navigationTitle("Edit Assignment")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(
-                    placement:
-                        .cancellationAction
+                    placement: .cancellationAction
                 ) {
                     Button("Cancel") {
                         dismiss()
@@ -292,8 +217,7 @@ struct EditAssignmentView: View {
     }
 
     private func saveChanges() {
-        var updatedAssignment =
-            assignment
+        var updatedAssignment = assignment
 
         updatedAssignment.title =
             title.trimmingCharacters(
@@ -305,11 +229,8 @@ struct EditAssignmentView: View {
                 in: .whitespacesAndNewlines
             )
 
-        updatedAssignment.dueDate =
-            dueDate
-
-        updatedAssignment.priority =
-            priority
+        updatedAssignment.dueDate = dueDate
+        updatedAssignment.priority = priority
 
         updatedAssignment.description =
             description.trimmingCharacters(
@@ -321,19 +242,5 @@ struct EditAssignmentView: View {
         )
 
         dismiss()
-    }
-
-    private func priorityColor(
-        _ priority:
-            Assignment.Priority
-    ) -> Color {
-        switch priority {
-        case .high:
-            return .red
-        case .medium:
-            return .orange
-        case .low:
-            return .green
-        }
     }
 }
