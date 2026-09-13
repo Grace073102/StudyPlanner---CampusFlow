@@ -11,4 +11,7 @@ struct AcademicTask: Identifiable, Codable {
     var id: String = UUID().uuidString
     var title: String
     var isCompleted: Bool
+
+    var plannedDate: Date?
+    var estimatedMinutes: Int?
 }
