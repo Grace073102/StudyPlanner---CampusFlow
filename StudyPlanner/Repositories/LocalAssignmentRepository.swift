@@ -57,21 +57,13 @@ class LocalAssignmentRepository: AssignmentRepository {
     }
 
     func update(_ assignment: Assignment) {
-        guard let index = assignments.firstIndex(
-            where: { $0.id == assignment.id }
-        ) else {
-            return
-        }
+        guard let index = assignments.firstIndex(where: { $0.id == assignment.id }) else { return }
 
         assignments[index] = assignment
     }
 
     func delete(_ assignment: Assignment) {
-        guard let index = assignments.firstIndex(
-            where: { $0.id == assignment.id }
-        ) else {
-            return
-        }
+        guard let index = assignments.firstIndex(where: { $0.id == assignment.id }) else { return }
 
         assignments.remove(at: index)
     }

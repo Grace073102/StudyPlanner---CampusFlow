@@ -30,9 +30,18 @@ class JSONAssignmentRepository: AssignmentRepository {
                 forResource: "SampleAssignments",
                 withExtension: "json"
             ) {
-                try? fileManager.copyItem(
-                    at: bundledURL,
-                    to: fileURL
+                do {
+                    try fileManager.copyItem(
+                        at: bundledURL,
+                        to: fileURL
+                    )
+                } catch {
+                    print("Failed to copy assignments: \(error)")
+                }
+            } else {
+                try? Data("[]".utf8).write(
+                    to: fileURL,
+                    options: .atomic
                 )
             }
         }

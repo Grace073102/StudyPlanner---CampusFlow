@@ -47,7 +47,7 @@ struct UpcomingDeadlinesView: View {
                 ForEach(
                     assignments
                         .sorted { $0.dueDate < $1.dueDate }
-                        .prefix(3)
+                        .prefix(5)
                 ) { assignment in
                     HStack(spacing: 0) {
                         RoundedRectangle(cornerRadius: 3)
