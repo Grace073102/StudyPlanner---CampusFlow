@@ -17,19 +17,16 @@ final class TaskViewModel: ObservableObject {
     }
 
     var allTasks: [AcademicTask] {
-        assignmentViewModel.assignments
-            .flatMap { $0.tasks }
+        assignmentViewModel.assignments.flatMap { $0.tasks }
     }
 
     var todayTasks: [AcademicTask] {
         allTasks.filter { task in
-            guard let plannedDate =
-                task.plannedDate else {
+            guard let plannedDate = task.plannedDate else {
                 return false
             }
 
-            return Calendar.current
-                .isDateInToday(plannedDate)
+            return Calendar.current.isDateInToday(plannedDate)
         }
     }
 
@@ -59,18 +56,21 @@ final class TaskViewModel: ObservableObject {
             }
             .sorted {
                 ($0.plannedDate ?? Date.distantFuture) <
-                ($1.plannedDate ?? Date.distantFuture)
+                    ($1.plannedDate ?? Date.distantFuture)
             }
     }
 
     var thisWeekTasks: [AcademicTask] {
         allTasks.filter { task in
-            guard let plannedDate = task.plannedDate
-            else {
+            guard let plannedDate = task.plannedDate else {
                 return false
             }
-            return Calendar.current
-                .isDate(plannedDate, equalTo: Date(), toGranularity: .weekOfYear)
+
+            return Calendar.current.isDate(
+                plannedDate,
+                equalTo: Date(),
+                toGranularity: .weekOfYear
+            )
         }
     }
 
@@ -80,56 +80,45 @@ final class TaskViewModel: ObservableObject {
         }
     }
 
+    var todayStudyMinutes: Int {
+        todayIncompleteTasks
+            .compactMap { $0.estimatedMinutes }
+            .reduce(0, +)
+    }
+
+    var todayIncompleteTasks: [AcademicTask] {
+        todayTasks.filter {
+            !$0.isCompleted
+        }
+    }
+
     func addTask(
         title: String,
         plannedDate: Date? = nil,
         estimatedMinutes: Int? = nil,
         to assignmentID: String
     ) {
-
-        let cleanedTitle =
-            title.trimmingCharacters(
-                in: .whitespacesAndNewlines
-            )
+        let cleanedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !cleanedTitle.isEmpty else {
-
             return
-
         }
 
-        guard var assignment =
-                assignmentViewModel.assignments
-                    .first(
-                        where: {
-
-                            $0.id ==
-                                assignmentID
-
-                        }
-                    )
-        else {
-
+        guard var assignment = assignmentViewModel.assignments.first(
+            where: { $0.id == assignmentID }
+        ) else {
             return
-
         }
 
         let newTask = AcademicTask(
             title: cleanedTitle,
             isCompleted: false,
             plannedDate: plannedDate,
-            estimatedMinutes:
-                estimatedMinutes
+            estimatedMinutes: estimatedMinutes
         )
 
-        assignment.tasks.append(
-            newTask
-        )
-
-        assignmentViewModel.update(
-            assignment
-        )
-
+        assignment.tasks.append(newTask)
+        assignmentViewModel.update(assignment)
     }
 
     func editTask(
@@ -138,145 +127,58 @@ final class TaskViewModel: ObservableObject {
         plannedDate: Date? = nil,
         estimatedMinutes: Int? = nil
     ) {
-
-        let cleanedTitle =
-            newTitle.trimmingCharacters(
-                in: .whitespacesAndNewlines
-            )
+        let cleanedTitle = newTitle.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !cleanedTitle.isEmpty else {
-
             return
-
         }
 
-        for assignment in
-            assignmentViewModel.assignments {
-
-            guard let taskIndex =
-                    assignment.tasks
-                        .firstIndex(
-                            where: {
-
-                                $0.id ==
-                                    taskID
-
-                            }
-                        )
-            else {
-
+        for assignment in assignmentViewModel.assignments {
+            guard let taskIndex = assignment.tasks.firstIndex(
+                where: { $0.id == taskID }
+            ) else {
                 continue
-
             }
 
-            var updatedAssignment =
-                assignment
+            var updatedAssignment = assignment
+            updatedAssignment.tasks[taskIndex].title = cleanedTitle
+            updatedAssignment.tasks[taskIndex].plannedDate = plannedDate
+            updatedAssignment.tasks[taskIndex].estimatedMinutes = estimatedMinutes
 
-            updatedAssignment
-                .tasks[taskIndex]
-                .title =
-                cleanedTitle
-
-            updatedAssignment
-                .tasks[taskIndex]
-                .plannedDate =
-                plannedDate
-
-            updatedAssignment
-                .tasks[taskIndex]
-                .estimatedMinutes =
-                estimatedMinutes
-
-            assignmentViewModel.update(
-                updatedAssignment
-            )
-
+            assignmentViewModel.update(updatedAssignment)
             return
-
         }
-
     }
 
-    func deleteTask(
-        taskID: String
-    ) {
-
-        for assignment in
-            assignmentViewModel.assignments {
-
-            guard let taskIndex =
-                    assignment.tasks
-                        .firstIndex(
-                            where: {
-
-                                $0.id ==
-                                    taskID
-
-                            }
-                        )
-            else {
-
+    func deleteTask(taskID: String) {
+        for assignment in assignmentViewModel.assignments {
+            guard let taskIndex = assignment.tasks.firstIndex(
+                where: { $0.id == taskID }
+            ) else {
                 continue
-
             }
 
-            var updatedAssignment =
-                assignment
+            var updatedAssignment = assignment
+            updatedAssignment.tasks.remove(at: taskIndex)
 
-            updatedAssignment.tasks
-                .remove(
-                    at: taskIndex
-                )
-
-            assignmentViewModel.update(
-                updatedAssignment
-            )
-
+            assignmentViewModel.update(updatedAssignment)
             return
-
         }
-
     }
 
-    func toggleTask(
-        taskID: String
-    ) {
-
-        for assignment in
-            assignmentViewModel.assignments {
-
-            guard let taskIndex =
-                    assignment.tasks
-                        .firstIndex(
-                            where: {
-
-                                $0.id ==
-                                    taskID
-
-                            }
-                        )
-            else {
-
+    func toggleTask(taskID: String) {
+        for assignment in assignmentViewModel.assignments {
+            guard let taskIndex = assignment.tasks.firstIndex(
+                where: { $0.id == taskID }
+            ) else {
                 continue
-
             }
 
-            var updatedAssignment =
-                assignment
+            var updatedAssignment = assignment
+            updatedAssignment.tasks[taskIndex].isCompleted.toggle()
 
-            updatedAssignment
-                .tasks[taskIndex]
-                .isCompleted
-                .toggle()
-
-            assignmentViewModel.update(
-                updatedAssignment
-            )
-
+            assignmentViewModel.update(updatedAssignment)
             return
-
         }
-
     }
-
 }

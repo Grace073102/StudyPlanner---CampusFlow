@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct TaskView: View {
+    
     let task: AcademicTask
+    var course: String? = nil
     var onChange: () -> Void = {}
 
     var body: some View {
@@ -29,6 +31,13 @@ struct TaskView: View {
                     .font(.subheadline)
                     .strikethrough(task.isCompleted)
                     .foregroundStyle(task.isCompleted ? .secondary : .primary)
+
+                if let course = course {
+                    Text(course)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.blue)
+                }
 
                 HStack(spacing: 10) {
                     if let plannedDate = task.plannedDate {

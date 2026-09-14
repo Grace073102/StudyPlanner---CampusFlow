@@ -23,7 +23,6 @@ struct DetailTaskView: View {
                     Text("Tasks")
                         .font(.title2)
                         .fontWeight(.semibold)
-
                     Spacer()
                 }
 
@@ -106,7 +105,10 @@ struct DetailTaskView: View {
                     VStack(spacing: 0) {
                         ForEach(assignments) { assignment in
                             ForEach(assignment.tasks) { task in
-                                TaskView(task: task) {
+                                TaskView(
+                                    task: task,
+                                    course: assignment.course
+                                ) {
                                     taskViewModel.toggleTask(
                                         taskID: task.id
                                     )

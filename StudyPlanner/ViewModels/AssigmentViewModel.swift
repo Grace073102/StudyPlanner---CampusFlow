@@ -9,19 +9,15 @@ import Foundation
 import Combine
 
 final class AssignmentViewModel: ObservableObject {
+
     @Published var assignments: [Assignment] = []
 
     let repository: AssignmentRepository
-
     private let addAssignmentUseCase: AddAssignmentUseCase
 
     init(repository: AssignmentRepository) {
         self.repository = repository
-        self.addAssignmentUseCase =
-            AddAssignmentUseCase(
-                repository: repository
-            )
-
+        self.addAssignmentUseCase = AddAssignmentUseCase(repository: repository)
         load()
     }
 
@@ -43,7 +39,6 @@ final class AssignmentViewModel: ObservableObject {
             priority: priority,
             description: description
         )
-
         assignments = repository.assignments
     }
 
@@ -58,19 +53,16 @@ final class AssignmentViewModel: ObservableObject {
     }
 
     var overallProgress: Double {
-        let allTasks =
-            assignments.flatMap { $0.tasks }
+        let allTasks = assignments.flatMap { $0.tasks }
 
         guard !allTasks.isEmpty else {
             return 0
         }
 
-        let completedTasks =
-            allTasks.filter {
-                $0.isCompleted
-            }.count
+        let completedTasks = allTasks.filter {
+            $0.isCompleted
+        }.count
 
-        return Double(completedTasks) /
-            Double(allTasks.count)
+        return Double(completedTasks) / Double(allTasks.count)
     }
 }

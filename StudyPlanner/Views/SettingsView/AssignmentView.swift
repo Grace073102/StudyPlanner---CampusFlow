@@ -10,7 +10,6 @@ import SwiftUI
 struct AssignmentView: View {
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
     @EnvironmentObject var taskViewModel: TaskViewModel
-
     @State private var showAddAssignment = false
 
     var body: some View {
@@ -41,66 +40,83 @@ struct AssignmentView: View {
                     }
 
                     UpcomingDeadlinesView(
-                        assignments:
-                            assignmentViewModel.assignments
+                        assignments: assignmentViewModel.assignments
                     )
 
-                    VStack(
-                        alignment: .leading,
-                        spacing: 16
-                    ) {
+                    VStack(alignment: .leading, spacing: 16) {
                         HStack(alignment: .top) {
-                            VStack(
-                                alignment: .leading,
-                                spacing: 3
-                            ) {
+                            VStack(alignment: .leading, spacing: 3) {
                                 Text("Upcoming Tasks")
                                     .font(.headline)
                                     .fontWeight(.semibold)
 
-                                Text(
-                                    "Tasks due within the next 7 days"
-                                )
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                Text("Tasks due within the next 7 days")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
                             }
 
                             Spacer()
 
                             NavigationLink {
                                 DetailTaskView()
-                                    .environmentObject(
-                                        assignmentViewModel
-                                    )
-                                    .environmentObject(
-                                        taskViewModel
-                                    )
+                                    .environmentObject(assignmentViewModel)
+                                    .environmentObject(taskViewModel)
                             } label: {
                                 HStack(spacing: 3) {
                                     Text("View All")
-
-                                    Image(
-                                        systemName:
-                                            "chevron.right"
-                                    )
+                                    Image(systemName: "chevron.right")
                                 }
                                 .font(.caption)
                                 .fontWeight(.semibold)
                             }
                         }
 
-                        if taskViewModel
-                            .upcomingTasks.isEmpty {
-                            Text(
-                                "No tasks due within the next 7 days"
+                        if !taskViewModel.todayIncompleteTasks.isEmpty {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Today's Study Plan")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+
+                                    Text(
+                                        "\(taskViewModel.todayIncompleteTasks.count) tasks"
+                                    )
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                }
+
+                                Spacer()
+
+                                HStack(spacing: 4) {
+                                    Image(systemName: "clock")
+                                    Text(
+                                        formattedDuration(
+                                            taskViewModel.todayStudyMinutes
+                                        )
+                                    )
+                                }
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            }
+                            .padding(12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(
+                                        Color.blue.opacity(0.08)
+                                    )
                             )
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        }
+
+                        if taskViewModel.upcomingTasks.isEmpty {
+                            Text("No tasks due within the next 7 days")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
                         } else {
-                            ForEach(
-                                taskViewModel.upcomingTasks
-                            ) { task in
-                                TaskView(task: task) {
+                            ForEach(taskViewModel.upcomingTasks) { task in
+                                TaskView(
+                                    task: task,
+                                    course: courseName(for: task)
+                                ) {
                                     taskViewModel.toggleTask(
                                         taskID: task.id
                                     )
@@ -114,24 +130,18 @@ struct AssignmentView: View {
                         alignment: .leading
                     )
                     .background(
-                        RoundedRectangle(
-                            cornerRadius: 20
-                        )
-                        .fill(
-                            Color(.systemBackground)
-                        )
-                        .shadow(
-                            color: .black.opacity(0.06),
-                            radius: 5,
-                            x: 0,
-                            y: 2
-                        )
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color(.systemBackground))
+                            .shadow(
+                                color: .black.opacity(0.06),
+                                radius: 5,
+                                x: 0,
+                                y: 2
+                            )
                     )
 
                     ProgressOverviewView(
-                        progress:
-                            assignmentViewModel
-                                .overallProgress
+                        progress: assignmentViewModel.overallProgress
                     )
 
                     Spacer(minLength: 20)
@@ -151,5 +161,30 @@ struct AssignmentView: View {
                     )
             }
         }
+    }
+    
+    private func courseName(for task: AcademicTask) -> String? {
+        assignmentViewModel.assignments.first { assignment in
+            assignment.tasks.contains {
+                $0.id == task.id
+            }
+        }?.course
+    }
+
+    private func formattedDuration(
+        _ minutes: Int
+    ) -> String {
+        if minutes < 60 {
+            return "\(minutes) min"
+        }
+
+        let hours = minutes / 60
+        let remainingMinutes = minutes % 60
+
+        if remainingMinutes == 0 {
+            return "\(hours) hr"
+        }
+
+        return "\(hours) hr \(remainingMinutes) min"
     }
 }
