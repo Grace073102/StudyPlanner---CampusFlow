@@ -134,7 +134,6 @@ CampusFlow uses an MVVM-based layered architecture.
 
 The main architecture is:
 
-```text
 Student
    │
    ▼
@@ -151,7 +150,6 @@ Repository
    │
    ▼
 JSON Persistence
-```
 
 The architecture separates user interface code, application state, business logic, domain models, and data persistence.
 
@@ -165,7 +163,6 @@ The application is designed around interactions between the student and the Camp
 
 A typical interaction for adding an assignment is:
 
-```text
 Student
    │
    │ Taps "+"
@@ -198,7 +195,6 @@ AssignmentView
    │
    ▼
 Student sees updated dashboard
-```
 
 The human-system boundary exists between the student and the SwiftUI interface. The student provides input through the interface, while the application handles validation, business logic, persistence, calculations, and presentation of results.
 
@@ -211,16 +207,7 @@ The human-system boundary exists between the student and the SwiftUI interface. 
 `Assignment` represents an academic assignment.
 
 Important information stored by an assignment includes:
-
-```text
-id
-title
-course
-dueDate
-priority
-description
-tasks
-```
+id, title, course, dueDate, priority, description, tasks
 
 Each assignment can contain multiple `AcademicTask` objects.
 
@@ -231,14 +218,7 @@ Each assignment can contain multiple `AcademicTask` objects.
 `AcademicTask` represents a smaller piece of work associated with an assignment.
 
 Important information includes:
-
-```text
-id
-title
-isCompleted
-plannedDate
-estimatedMinutes
-```
+id, title, isCompleted, plannedDate, estimatedMinutes
 
 The planned date allows the student to decide when they intend to work on the task.
 
@@ -255,7 +235,6 @@ CampusFlow currently uses two main ViewModels.
 `AssignmentViewModel` manages assignment-related application state.
 
 Its responsibilities include:
-
 - loading assignments
 - adding assignments
 - updating assignments
@@ -273,7 +252,6 @@ The ViewModel communicates with the repository rather than directly accessing JS
 `TaskViewModel` manages task-related functionality.
 
 Its responsibilities include:
-
 - retrieving all tasks
 - retrieving today's tasks
 - retrieving this week's tasks
@@ -323,21 +301,13 @@ CampusFlow uses the Repository Pattern to separate application logic from data p
 
 The repository abstraction is:
 
-```text
 AssignmentRepository
         │
         ▼
 JSONAssignmentRepository
-```
 
 `AssignmentRepository` defines the operations required by the application, including:
-
-```text
-load
-add
-update
-delete
-```
+load, add, update, delete
 
 The ViewModel depends on the repository abstraction rather than directly managing the JSON file.
 
@@ -349,20 +319,9 @@ This makes the architecture easier to maintain and test.
 
 CampusFlow uses JSON for local data persistence.
 
-The main implementation is:
+The main implementation is JSONAssignmentRepository.
 
-```text
-JSONAssignmentRepository
-```
-
-Swift's `Codable` system is used with:
-
-```text
-JSONEncoder
-JSONDecoder
-```
-
-to convert assignment objects between Swift models and JSON data.
+Swift's `Codable` system is used with JSONEncoder and JSONDecoder to convert assignment objects between Swift models and JSON data.
 
 The application stores its working assignment data locally in the application's Documents directory.
 
@@ -407,17 +366,7 @@ The application prevents an assignment from being added when:
 - the course is empty
 - the selected due date is invalid
 
-The `AddAssignmentUseCase` provides human-readable errors such as:
-
-```text
-Enter an assignment title before saving.
-```
-
-and:
-
-```text
-Enter the course of this assignment.
-```
+The `AddAssignmentUseCase` provides human-readable errors such as "Enter an assignment title before saving" and "Enter the course of this assignment".
 
 ---
 
