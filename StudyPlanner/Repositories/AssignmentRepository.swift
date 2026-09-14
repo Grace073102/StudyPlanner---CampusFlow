@@ -14,3 +14,9 @@ protocol AssignmentRepository {
     func update(_ assignment: Assignment)
     func delete(_ assignment: Assignment)
 }
+
+extension AssignmentRepository {
+    var errorMessage: String? {
+        nil
+    }
+}

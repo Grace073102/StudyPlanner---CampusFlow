@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct AssignmentDetailView: View {
-    @EnvironmentObject var assignmentViewModel: AssignmentViewModel
-    let assignment: Assignment
 
+    @EnvironmentObject var assignmentViewModel: AssignmentViewModel
     @Environment(\.dismiss) private var dismiss
+
+    let assignment: Assignment
 
     @State private var showEditAssignment = false
     @State private var showDeleteConfirmation = false
@@ -38,10 +39,7 @@ struct AssignmentDetailView: View {
                             .foregroundStyle(.secondary)
                     }
                     .padding(16)
-                    .frame(
-                        maxWidth: .infinity,
-                        alignment: .leading
-                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color(.systemBackground))
@@ -50,9 +48,7 @@ struct AssignmentDetailView: View {
             }
             .padding(20)
         }
-        .background(
-            Color(.systemGroupedBackground)
-        )
+        .background(Color(.systemGroupedBackground))
         .navigationTitle(currentAssignment.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -80,36 +76,22 @@ struct AssignmentDetailView: View {
                 .padding(.vertical, 2)
             }
         }
-        .sheet(
-            isPresented: $showEditAssignment
-        ) {
+        .sheet(isPresented: $showEditAssignment) {
             EditAssignmentView(
                 assignment: currentAssignment
             )
-            .environmentObject(
-                assignmentViewModel
-            )
+            .environmentObject(assignmentViewModel)
         }
         .alert(
             "Delete Assignment?",
             isPresented: $showDeleteConfirmation
         ) {
-            Button(
-                "Delete",
-                role: .destructive
-            ) {
-                assignmentViewModel.delete(
-                    currentAssignment
-                )
-
+            Button("Delete", role: .destructive) {
+                assignmentViewModel.delete(currentAssignment)
                 dismiss()
             }
 
-            Button(
-                "Cancel",
-                role: .cancel
-            ) {
-            }
+            Button("Cancel", role: .cancel) {}
         } message: {
             Text(
                 "This assignment and all of its subtasks will be permanently deleted."

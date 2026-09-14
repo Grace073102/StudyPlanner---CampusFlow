@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AddAssignmentView: View {
+
     @EnvironmentObject var assignmentViewModel: AssignmentViewModel
     @Environment(\.dismiss) private var dismiss
 
@@ -23,6 +24,7 @@ struct AddAssignmentView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+
                     VStack(alignment: .leading, spacing: 7) {
                         Text("Assignment Title")
                             .font(.subheadline)
@@ -32,6 +34,7 @@ struct AddAssignmentView: View {
                             "e.g. Database Assignment",
                             text: $title
                         )
+                        .textInputAutocapitalization(.words)
                         .padding(.horizontal, 14)
                         .frame(height: 48)
                         .background(
@@ -52,6 +55,7 @@ struct AddAssignmentView: View {
                             "e.g. Database Systems",
                             text: $course
                         )
+                        .textInputAutocapitalization(.words)
                         .padding(.horizontal, 14)
                         .frame(height: 48)
                         .background(
@@ -195,8 +199,7 @@ struct AddAssignmentView: View {
                 "Unable to Add Assignment",
                 isPresented: $showError
             ) {
-                Button("OK", role: .cancel) {
-                }
+                Button("OK", role: .cancel) {}
             } message: {
                 Text(errorMessage)
             }
@@ -204,12 +207,8 @@ struct AddAssignmentView: View {
     }
 
     private var isValid: Bool {
-        !title.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        ).isEmpty &&
-        !course.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        ).isEmpty
+        !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !course.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private func saveAssignment() {

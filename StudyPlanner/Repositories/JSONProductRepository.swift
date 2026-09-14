@@ -10,12 +10,12 @@ import Foundation
 class JSONAssignmentRepository: AssignmentRepository {
 
     private(set) var assignments: [Assignment] = []
+    private(set) var errorMessage: String?
 
     private let fileURL: URL
 
     init() {
         let fileManager = FileManager.default
-
         let documentsURL = fileManager.urls(
             for: .documentDirectory,
             in: .userDomainMask
@@ -36,13 +36,9 @@ class JSONAssignmentRepository: AssignmentRepository {
                         to: fileURL
                     )
                 } catch {
-                    print("Failed to copy assignments: \(error)")
+                    errorMessage = "Your assignment data could not be prepared. Please restart the app and try again."
+                    print("Failed to create assignments file: \(error)")
                 }
-            } else {
-                try? Data("[]".utf8).write(
-                    to: fileURL,
-                    options: .atomic
-                )
             }
         }
 
@@ -53,11 +49,15 @@ class JSONAssignmentRepository: AssignmentRepository {
         do {
             let data = try Data(contentsOf: fileURL)
 
-            return try JSONDecoder().decode(
+            let loadedAssignments = try JSONDecoder().decode(
                 [Assignment].self,
                 from: data
             )
+
+            errorMessage = nil
+            return loadedAssignments
         } catch {
+            errorMessage = "Your saved assignments could not be loaded. Please restart the app and try again."
             print("Failed to load assignments: \(error)")
             return []
         }
@@ -93,7 +93,10 @@ class JSONAssignmentRepository: AssignmentRepository {
                 to: fileURL,
                 options: .atomic
             )
+
+            errorMessage = nil
         } catch {
+            errorMessage = "Your changes could not be saved. Please try again."
             print("Failed to save assignments: \(error)")
         }
     }

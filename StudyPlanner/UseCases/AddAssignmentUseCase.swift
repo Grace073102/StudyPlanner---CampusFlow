@@ -7,23 +7,23 @@
 
 import Foundation
 
-
 struct AddAssignmentUseCase {
-    
+
     let repository: AssignmentRepository
 
     enum AddAssignmentError: LocalizedError {
         case missingTitle
         case missingCourse
         case dueDateInPast
+
         var errorDescription: String? {
             switch self {
             case .missingTitle:
                 return "Enter an assignment title before saving."
             case .missingCourse:
-                return "Enter the course of this assignment."
+                return "Enter the course for this assignment before saving."
             case .dueDateInPast:
-                return "Choose a due date."
+                return "The due date cannot be in the past. Choose today or a future date."
             }
         }
     }
@@ -35,13 +35,8 @@ struct AddAssignmentUseCase {
         priority: Assignment.Priority,
         description: String
     ) throws -> Assignment {
-        let cleanedTitle = title.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
-
-        let cleanedCourse = course.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
+        let cleanedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanedCourse = course.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !cleanedTitle.isEmpty else {
             throw AddAssignmentError.missingTitle
@@ -52,11 +47,8 @@ struct AddAssignmentUseCase {
         }
 
         let calendar = Calendar.current
-
         let today = calendar.startOfDay(for: Date())
-
-        let selectedDueDate =
-            calendar.startOfDay(for: dueDate)
+        let selectedDueDate = calendar.startOfDay(for: dueDate)
 
         guard selectedDueDate >= today else {
             throw AddAssignmentError.dueDateInPast
@@ -72,7 +64,6 @@ struct AddAssignmentUseCase {
         )
 
         repository.add(assignment)
-
         return assignment
     }
 }

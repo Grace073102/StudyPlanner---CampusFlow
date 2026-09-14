@@ -11,6 +11,7 @@ import Combine
 final class AssignmentViewModel: ObservableObject {
 
     @Published var assignments: [Assignment] = []
+    @Published var repositoryErrorMessage: String?
 
     let repository: AssignmentRepository
     private let addAssignmentUseCase: AddAssignmentUseCase
@@ -23,6 +24,7 @@ final class AssignmentViewModel: ObservableObject {
 
     func load() {
         assignments = repository.assignments
+        repositoryErrorMessage = repository.errorMessage
     }
 
     func add(
@@ -39,17 +41,21 @@ final class AssignmentViewModel: ObservableObject {
             priority: priority,
             description: description
         )
+
         assignments = repository.assignments
+        repositoryErrorMessage = repository.errorMessage
     }
 
     func update(_ assignment: Assignment) {
         repository.update(assignment)
         assignments = repository.assignments
+        repositoryErrorMessage = repository.errorMessage
     }
 
     func delete(_ assignment: Assignment) {
         repository.delete(assignment)
         assignments = repository.assignments
+        repositoryErrorMessage = repository.errorMessage
     }
 
     var overallProgress: Double {
