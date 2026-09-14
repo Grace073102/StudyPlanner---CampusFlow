@@ -133,7 +133,7 @@ The application also calculates overall progress across all assignments.
 CampusFlow uses an MVVM-based layered architecture.
 
 The main architecture is:
-
+```text
 Student
    │
    ▼
@@ -150,6 +150,7 @@ Repository
    │
    ▼
 JSON Persistence
+```
 
 The architecture separates user interface code, application state, business logic, domain models, and data persistence.
 
@@ -162,7 +163,7 @@ This separation improves maintainability and makes individual parts of the appli
 The application is designed around interactions between the student and the CampusFlow system.
 
 A typical interaction for adding an assignment is:
-
+```text
 Student
    │
    │ Taps "+"
@@ -195,6 +196,7 @@ AssignmentView
    │
    ▼
 Student sees updated dashboard
+```
 
 The human-system boundary exists between the student and the SwiftUI interface. The student provides input through the interface, while the application handles validation, business logic, persistence, calculations, and presentation of results.
 
@@ -300,12 +302,12 @@ The use case keeps this business logic separate from the SwiftUI interface.
 CampusFlow uses the Repository Pattern to separate application logic from data persistence.
 
 The repository abstraction is:
-
+```text
 AssignmentRepository
         │
         ▼
 JSONAssignmentRepository
-
+```
 `AssignmentRepository` defines the operations required by the application, including:
 load, add, update, delete
 
